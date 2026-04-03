@@ -1,7 +1,7 @@
 # Dependencies
 node_modules/
 
-# Build output
+# Build output (這一個沒有使用到，因為目錄在publish而且是開放的)
 dist/
 
 # TypeScript incremental build cache
