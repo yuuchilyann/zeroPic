@@ -51,21 +51,24 @@ export function ImagePreview({
       : null
 
   return (
-    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="flex-start">
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'flex-start' }}>
       {/* 原始圖片（帶即時 CSS 預覽） */}
       <Paper variant="outlined" sx={{ flex: 1, p: 1.5 }}>
-        <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" mb={1} textTransform="uppercase" letterSpacing={1}>
+        <Typography
+          variant="caption"
+          sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}
+        >
           原始圖片
         </Typography>
         <Box sx={{ overflow: 'hidden', borderRadius: 1 }}>
           <img src={originalUrl} alt="原始" style={{ ...IMG_SX, ...buildPreviewStyle(options) }} />
         </Box>
-        <Stack direction="row" spacing={1} mt={1} flexWrap="wrap" useFlexGap>
+        <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 1, flexWrap: 'wrap' }}>
           <Chip label={formatBytes(originalInfo.size)} size="small" variant="outlined" />
           <Chip label={`${originalInfo.width} × ${originalInfo.height}`} size="small" variant="outlined" />
           <Chip label={originalInfo.type.replace('image/', '').toUpperCase()} size="small" variant="outlined" />
         </Stack>
-        <Typography variant="caption" color="text.disabled" display="block" mt={0.5}>
+        <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', mt: 0.5 }}>
           * 預覽顯示濾鏡與旋轉效果，實際輸出請按「套用並預覽」
         </Typography>
       </Paper>
@@ -75,13 +78,16 @@ export function ImagePreview({
 
       {/* 處理結果 */}
       <Paper variant="outlined" sx={{ flex: 1, p: 1.5 }}>
-        <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" mb={1} textTransform="uppercase" letterSpacing={1}>
+        <Typography
+          variant="caption"
+          sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 1, textTransform: 'uppercase', letterSpacing: 1 }}
+        >
           處理結果
         </Typography>
         {processedUrl ? (
           <>
             <img src={processedUrl} alt="處理後" style={IMG_SX} />
-            <Stack direction="row" spacing={1} mt={1} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 1, flexWrap: 'wrap' }}>
               <Chip label={formatBytes(processedSize!)} size="small" variant="outlined" />
               {saved !== null && (
                 <Chip

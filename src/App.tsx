@@ -38,10 +38,10 @@ function App() {
             textAlign: 'center',
           }}
         >
-          <Typography variant="h5" fontWeight={800} color="#fff" letterSpacing="-0.02em">
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>
             zeroPic
           </Typography>
-          <Typography variant="caption" color="rgba(255,255,255,0.55)">
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.55)' }}>
             簡易圖片處理工具
           </Typography>
         </Box>

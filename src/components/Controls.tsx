@@ -86,7 +86,7 @@ function OutputSection({
     <Stack spacing={2.5}>
       {/* 格式 */}
       <Box>
-        <Typography variant="body2" fontWeight={600} mb={0.75}>輸出格式</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.75 }}>輸出格式</Typography>
         <ToggleButtonGroup
           value={options.format}
           exclusive
@@ -98,59 +98,61 @@ function OutputSection({
           <ToggleButton value="image/webp">WebP</ToggleButton>
         </ToggleButtonGroup>
         {isPng && (
-          <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
-            PNG 為無損格式，品質滑桿不影響檔案大小
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
+            PNG 為無損格式，不須調整品質。
           </Typography>
         )}
       </Box>
 
-      {/* 品質滑桿 */}
-      <Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="body2" fontWeight={600}>品質</Typography>
-          <Chip label={`${options.quality}%`} size="small" color="primary" variant="outlined" />
-        </Stack>
-        <Slider
-          value={options.quality}
-          min={1} max={100} step={1}
-          disabled={isPng || isOptimizing}
-          onChange={(_, v) => onUpdateOptions({ quality: v as number })}
-          sx={{ mt: 0.5 }}
-        />
-        <Stack direction="row" justifyContent="space-between">
-          <Typography variant="caption" color="text.secondary">最小</Typography>
-          <Typography variant="caption" color="text.secondary">最佳</Typography>
-        </Stack>
+      {/* 品質滑桿（PNG 為無損格式，無品質可調，整段隱藏） */}
+      {!isPng && (
+        <Box>
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>品質</Typography>
+            <Chip label={`${options.quality}%`} size="small" color="primary" variant="outlined" />
+          </Stack>
+          <Slider
+            value={options.quality}
+            min={1} max={100} step={1}
+            disabled={isOptimizing}
+            onChange={(_, v) => onUpdateOptions({ quality: v as number })}
+            sx={{ mt: 0.5 }}
+          />
+          <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>最小</Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>最佳</Typography>
+          </Stack>
 
-        {/* 即時估算 */}
-        <Box
-          sx={{
-            mt: 1, px: 1.25, py: 0.75, borderRadius: 1,
-            bgcolor: overTarget ? '#fff4f4' : '#f4f6ff',
-            border: '1px solid', borderColor: overTarget ? '#ffc9c9' : '#e0e8ff',
-            minHeight: 36, display: 'flex', alignItems: 'center', gap: 1,
-          }}
-        >
-          {isEstimating ? (
-            <><CircularProgress size={12} /><Typography variant="caption" color="text.secondary">估算中...</Typography></>
-          ) : estimatedSize !== null ? (
-            <Stack direction="row" alignItems="center" spacing={1} flexWrap="wrap" useFlexGap>
-              <Typography variant="caption">
-                預估大小：<strong>{formatBytes(estimatedSize)}</strong>
-              </Typography>
-              {overTarget && <Chip label="超出目標容量" size="small" color="error" sx={{ height: 18, fontSize: 10 }} />}
-              {targetSize !== null && !overTarget && <Chip label="符合目標容量" size="small" color="success" sx={{ height: 18, fontSize: 10 }} />}
-            </Stack>
-          ) : (
-            <Typography variant="caption" color="text.disabled">上傳圖片後自動估算</Typography>
-          )}
+          {/* 即時估算 */}
+          <Box
+            sx={{
+              mt: 1, px: 1.25, py: 0.75, borderRadius: 1,
+              bgcolor: overTarget ? '#fff4f4' : '#f4f6ff',
+              border: '1px solid', borderColor: overTarget ? '#ffc9c9' : '#e0e8ff',
+              minHeight: 36, display: 'flex', alignItems: 'center', gap: 1,
+            }}
+          >
+            {isEstimating ? (
+              <><CircularProgress size={12} /><Typography variant="caption" sx={{ color: 'text.secondary' }}>估算中...</Typography></>
+            ) : estimatedSize !== null ? (
+              <Stack direction="row" spacing={1} useFlexGap sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+                <Typography variant="caption">
+                  預估大小：<strong>{formatBytes(estimatedSize)}</strong>
+                </Typography>
+                {overTarget && <Chip label="超出目標容量" size="small" color="error" sx={{ height: 18, fontSize: 10 }} />}
+                {targetSize !== null && !overTarget && <Chip label="符合目標容量" size="small" color="success" sx={{ height: 18, fontSize: 10 }} />}
+              </Stack>
+            ) : (
+              <Typography variant="caption" sx={{ color: 'text.disabled' }}>上傳圖片後自動估算</Typography>
+            )}
+          </Box>
         </Box>
-      </Box>
+      )}
 
       {/* 目標容量 */}
       <Box>
-        <Typography variant="body2" fontWeight={600} mb={0.75}>目標容量上限</Typography>
-        <Stack direction="row" spacing={1} alignItems="center">
+        <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.75 }}>目標容量上限</Typography>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <TextField
             size="small" type="number" placeholder="例：500"
             value={targetInput}
@@ -174,7 +176,7 @@ function OutputSection({
           {isOptimizing ? '搜尋最佳品質中...' : '自動最佳化品質'}
         </Button>
         {isOptimizing && (
-          <Typography variant="caption" color="text.secondary" display="block" mt={0.5}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
             二分搜尋中，約需數秒...
           </Typography>
         )}
@@ -224,7 +226,7 @@ function ResizeSection({ options, originalInfo, onUpdateResize }: Pick<ControlsP
             label={<Typography variant="body2">維持長寬比</Typography>}
           />
           {originalInfo && (
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               原始：{originalInfo.width} × {originalInfo.height} px
             </Typography>
           )}
@@ -283,10 +285,10 @@ function CropSection({ options, originalInfo, originalPreviewUrl, onUpdateCrop }
 
           {/* 數值輸入（精確控制） */}
           <Box>
-            <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mb: 1 }}>
               精確座標
             </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
               <TextField
                 label="X" type="number" size="small"
                 value={crop.x}
@@ -318,9 +320,9 @@ function CropSection({ options, originalInfo, originalPreviewUrl, onUpdateCrop }
             </Stack>
           </Box>
 
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             {info && (
-              <Typography variant="caption" color="text.secondary" sx={{ flex: 1 }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary', flex: 1 }}>
                 裁切後：{crop.width} × {crop.height} px
               </Typography>
             )}
@@ -332,7 +334,7 @@ function CropSection({ options, originalInfo, originalPreviewUrl, onUpdateCrop }
       )}
 
       {!hasInfo && (
-        <Typography variant="caption" color="text.disabled">請先上傳圖片</Typography>
+        <Typography variant="caption" sx={{ color: 'text.disabled' }}>請先上傳圖片</Typography>
       )}
     </Stack>
   )
@@ -351,8 +353,8 @@ function TransformSection({ options, onUpdateOptions }: Pick<ControlsProps, 'opt
     <Stack spacing={2}>
       {/* 旋轉 */}
       <Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.75}>
-          <Typography variant="body2" fontWeight={600}>旋轉</Typography>
+        <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 0.75 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>旋轉</Typography>
           {options.rotation !== 0 && (
             <Chip label={`${options.rotation}°`} size="small" color="primary" variant="outlined" sx={{ height: 20 }} />
           )}
@@ -373,7 +375,7 @@ function TransformSection({ options, onUpdateOptions }: Pick<ControlsProps, 'opt
 
       {/* 翻轉：用獨立 selected prop，避免 ToggleButtonGroup array 更新問題 */}
       <Box>
-        <Typography variant="body2" fontWeight={600} mb={0.75}>翻轉</Typography>
+        <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.75 }}>翻轉</Typography>
         <Stack direction="row" spacing={1}>
           <ToggleButton
             value="H"
@@ -383,7 +385,7 @@ function TransformSection({ options, onUpdateOptions }: Pick<ControlsProps, 'opt
             sx={{ px: 1.5 }}
           >
             <FlipIcon fontSize="small" />
-            <Typography variant="caption" ml={0.5}>水平</Typography>
+            <Typography variant="caption" sx={{ ml: 0.5 }}>水平</Typography>
           </ToggleButton>
           <ToggleButton
             value="V"
@@ -393,7 +395,7 @@ function TransformSection({ options, onUpdateOptions }: Pick<ControlsProps, 'opt
             sx={{ px: 1.5 }}
           >
             <FlipIcon fontSize="small" sx={{ transform: 'rotate(90deg)' }} />
-            <Typography variant="caption" ml={0.5}>垂直</Typography>
+            <Typography variant="caption" sx={{ ml: 0.5 }}>垂直</Typography>
           </ToggleButton>
         </Stack>
       </Box>
@@ -425,9 +427,9 @@ function FilterSection({ options, onUpdateFilters }: Pick<ControlsProps, 'option
         { key: 'contrast' as const, label: '對比', min: 0, max: 200, unit: '%' },
       ].map(({ key, label, min, max }) => (
         <Box key={key}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="body2" fontWeight={600}>{label}</Typography>
-            <Typography variant="caption" color="primary.main">{filters[key]}%</Typography>
+          <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>{label}</Typography>
+            <Typography variant="caption" sx={{ color: 'primary.main' }}>{filters[key]}%</Typography>
           </Stack>
           <Slider
             value={filters[key]} min={min} max={max}
@@ -461,9 +463,9 @@ export function Controls({
     <Stack spacing={0}>
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <SettingsIcon fontSize="small" color="primary" />
-            <Typography variant="body2" fontWeight={600}>輸出設定</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>輸出設定</Typography>
           </Stack>
         </AccordionSummary>
         <AccordionDetails>
@@ -478,9 +480,9 @@ export function Controls({
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <PhotoSizeSelectLargeIcon fontSize="small" color="primary" />
-            <Typography variant="body2" fontWeight={600}>調整尺寸</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>調整尺寸</Typography>
             {options.resize.enabled && <Chip label="啟用" size="small" color="primary" sx={{ height: 18 }} />}
           </Stack>
         </AccordionSummary>
@@ -491,9 +493,9 @@ export function Controls({
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <CropIcon fontSize="small" color="primary" />
-            <Typography variant="body2" fontWeight={600}>裁切</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>裁切</Typography>
             {options.crop.enabled && <Chip label="啟用" size="small" color="primary" sx={{ height: 18 }} />}
           </Stack>
         </AccordionSummary>
@@ -507,9 +509,9 @@ export function Controls({
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <TransformIcon fontSize="small" color="primary" />
-            <Typography variant="body2" fontWeight={600}>旋轉與翻轉</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>旋轉與翻轉</Typography>
             {transformAdjusted && <Chip label="已調整" size="small" color="primary" sx={{ height: 18 }} />}
           </Stack>
         </AccordionSummary>
@@ -520,9 +522,9 @@ export function Controls({
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Stack direction="row" spacing={1} alignItems="center">
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <TuneIcon fontSize="small" color="primary" />
-            <Typography variant="body2" fontWeight={600}>濾鏡調整</Typography>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>濾鏡調整</Typography>
             {filterAdjusted && <Chip label="已調整" size="small" color="primary" sx={{ height: 18 }} />}
           </Stack>
         </AccordionSummary>

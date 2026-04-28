@@ -61,10 +61,10 @@ export function DropZone({ onFile }: DropZoneProps) {
       <Box sx={{ color: dragging ? 'primary.main' : 'text.disabled' }}>
         <ImageOutlinedIcon sx={{ fontSize: 56 }} />
       </Box>
-      <Typography variant="body1" fontWeight={500} color="text.primary">
+      <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }}>
         拖曳圖片至此，或點擊選取
       </Typography>
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
         支援 JPEG、PNG、WebP、GIF、BMP
       </Typography>
     </Paper>
