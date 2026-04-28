@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { ThemeProvider, CssBaseline } from '@mui/material'
-import { Box, Container, Paper, Typography, Alert } from '@mui/material'
+import { Box, Container, Paper, Stack, Typography, Alert } from '@mui/material'
 import { theme } from './theme'
 import { useImageProcessor } from './hooks/useImageProcessor'
 import { DropZone } from './components/DropZone'
@@ -10,8 +10,12 @@ import { Controls } from './components/Controls'
 function App() {
   const {
     state,
-    loadFile,
+    selected,
+    loadFiles,
+    selectItem,
+    removeItem,
     runProcess,
+    runProcessAll,
     updateOptions,
     updateResize,
     updateCrop,
@@ -19,10 +23,15 @@ function App() {
     setTargetSize,
     autoOptimize,
     download,
+    downloadAllZip,
     reset,
+    clearError,
   } = useImageProcessor()
 
-  const handleFile = useCallback((file: File) => loadFile(file), [loadFile])
+  const handleFiles = useCallback((files: File[]) => loadFiles(files), [loadFiles])
+
+  const doneCount = state.items.filter((i) => i.status === 'done').length
+  const hasItems = state.items.length > 0
 
   return (
     <ThemeProvider theme={theme}>
@@ -49,13 +58,13 @@ function App() {
         {/* Main */}
         <Container maxWidth="xl" sx={{ py: 3 }}>
           {state.error && (
-            <Alert severity="error" onClose={() => updateOptions({})} sx={{ mb: 2 }}>
+            <Alert severity="error" onClose={clearError} sx={{ mb: 2 }}>
               {state.error}
             </Alert>
           )}
 
-          {!state.originalFile ? (
-            <DropZone onFile={handleFile} />
+          {!hasItems ? (
+            <DropZone onFiles={handleFiles} />
           ) : (
             <Box
               sx={{
@@ -65,14 +74,23 @@ function App() {
                 alignItems: 'start',
               }}
             >
-              {/* 左側：圖片預覽 */}
-              <ImagePreview
-                originalUrl={state.originalPreviewUrl!}
-                originalInfo={state.originalInfo!}
-                processedUrl={state.processedPreviewUrl}
-                processedSize={state.processedSize}
-                options={state.options}
-              />
+              {/* 左側：圖片預覽 + 縮圖 + 加入更多 */}
+              <Stack spacing={2}>
+                {selected && (
+                  <ImagePreview
+                    items={state.items}
+                    selectedId={state.selectedId}
+                    originalUrl={selected.originalUrl}
+                    originalInfo={selected.info}
+                    processedUrl={selected.processedUrl}
+                    processedSize={selected.processedSize}
+                    options={state.options}
+                    onSelect={selectItem}
+                    onRemove={removeItem}
+                  />
+                )}
+                <DropZone onFiles={handleFiles} compact />
+              </Stack>
 
               {/* 右側：操作面板 */}
               <Paper
@@ -88,14 +106,19 @@ function App() {
               >
                 <Controls
                   options={state.options}
-                  originalInfo={state.originalInfo}
-                  originalPreviewUrl={state.originalPreviewUrl}
-                  hasResult={state.processedBlob !== null}
+                  originalInfo={selected?.info ?? null}
+                  originalPreviewUrl={selected?.originalUrl ?? null}
+                  hasResult={selected?.processedBlob != null}
                   isProcessing={state.isProcessing}
                   isEstimating={state.isEstimating}
                   isOptimizing={state.isOptimizing}
                   estimatedSize={state.estimatedSize}
                   targetSize={state.targetSize}
+                  itemCount={state.items.length}
+                  doneCount={doneCount}
+                  isBatchProcessing={state.isBatchProcessing}
+                  isZipping={state.isZipping}
+                  batchProgress={state.batchProgress}
                   onUpdateOptions={updateOptions}
                   onUpdateResize={updateResize}
                   onUpdateCrop={updateCrop}
@@ -103,7 +126,9 @@ function App() {
                   onTargetSizeChange={setTargetSize}
                   onAutoOptimize={autoOptimize}
                   onProcess={runProcess}
+                  onProcessAll={runProcessAll}
                   onDownload={download}
+                  onDownloadAllZip={downloadAllZip}
                   onReset={reset}
                 />
               </Paper>

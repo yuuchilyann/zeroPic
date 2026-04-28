@@ -41,6 +41,11 @@ interface ControlsProps {
   isOptimizing: boolean
   estimatedSize: number | null
   targetSize: number | null
+  itemCount: number
+  doneCount: number
+  isBatchProcessing: boolean
+  isZipping: boolean
+  batchProgress: { done: number; total: number } | null
   onUpdateOptions: (patch: Partial<ProcessOptions>) => void
   onUpdateResize: (patch: Partial<ResizeOptions>) => void
   onUpdateCrop: (patch: Partial<CropOptions>) => void
@@ -48,7 +53,9 @@ interface ControlsProps {
   onTargetSizeChange: (bytes: number | null) => void
   onAutoOptimize: () => void
   onProcess: () => void
+  onProcessAll: () => void
   onDownload: () => void
+  onDownloadAllZip: () => void
   onReset: () => void
 }
 
@@ -451,11 +458,13 @@ export function Controls({
   options, originalInfo, originalPreviewUrl, hasResult,
   isProcessing, isEstimating, isOptimizing,
   estimatedSize, targetSize,
+  itemCount, doneCount, isBatchProcessing, isZipping, batchProgress,
   onUpdateOptions, onUpdateResize, onUpdateCrop, onUpdateFilters,
   onTargetSizeChange, onAutoOptimize,
-  onProcess, onDownload, onReset,
+  onProcess, onProcessAll, onDownload, onDownloadAllZip, onReset,
 }: ControlsProps) {
-  const isBusy = isProcessing || isOptimizing
+  const isBusy = isProcessing || isOptimizing || isBatchProcessing || isZipping
+  const multi = itemCount > 1
   const transformAdjusted = options.rotation !== 0 || options.flipH || options.flipV
   const filterAdjusted = options.filters.grayscale > 0 || options.filters.brightness !== 100 || options.filters.contrast !== 100
 
@@ -539,18 +548,42 @@ export function Controls({
           startIcon={isProcessing ? <CircularProgress size={16} color="inherit" /> : undefined}
           onClick={onProcess} disabled={isBusy}
         >
-          {isProcessing ? '處理中...' : '套用並預覽'}
+          {isProcessing ? '處理中...' : multi ? '套用並預覽（目前選中）' : '套用並預覽'}
         </Button>
+
+        {multi && (
+          <Button
+            variant="contained" color="primary" fullWidth
+            startIcon={isBatchProcessing ? <CircularProgress size={16} color="inherit" /> : <AutoFixHighIcon />}
+            onClick={onProcessAll} disabled={isBusy}
+          >
+            {isBatchProcessing && batchProgress
+              ? `批次處理中 ${batchProgress.done}/${batchProgress.total}`
+              : `全部套用（${itemCount} 張）`}
+          </Button>
+        )}
+
         {hasResult && (
           <Button variant="contained" color="success" fullWidth
             startIcon={<DownloadIcon />} onClick={onDownload} disabled={isBusy}>
-            下載圖片
+            {multi ? '下載目前選中' : '下載圖片'}
           </Button>
         )}
+
+        {multi && doneCount > 0 && (
+          <Button
+            variant="contained" color="success" fullWidth
+            startIcon={isZipping ? <CircularProgress size={16} color="inherit" /> : <DownloadIcon />}
+            onClick={onDownloadAllZip} disabled={isBusy}
+          >
+            {isZipping ? '打包中...' : `下載全部 ZIP（${doneCount} 張）`}
+          </Button>
+        )}
+
         <Button variant="outlined" color="inherit" fullWidth
           startIcon={<RestartAltIcon />} onClick={onReset} disabled={isBusy}
           sx={{ color: 'text.secondary' }}>
-          重設
+          全部清空
         </Button>
       </Stack>
     </Stack>

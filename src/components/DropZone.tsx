@@ -3,25 +3,26 @@ import { Box, Paper, Typography } from '@mui/material'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 
 interface DropZoneProps {
-  onFile: (file: File) => void
+  onFiles: (files: File[]) => void
+  compact?: boolean
 }
 
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/bmp']
 
-export function DropZone({ onFile }: DropZoneProps) {
+export function DropZone({ onFiles, compact = false }: DropZoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragging, setDragging] = useState(false)
 
   function handleDrop(e: DragEvent<HTMLDivElement>) {
     e.preventDefault()
     setDragging(false)
-    const file = e.dataTransfer.files[0]
-    if (file && ACCEPTED.includes(file.type)) onFile(file)
+    const files = Array.from(e.dataTransfer.files).filter((f) => ACCEPTED.includes(f.type))
+    if (files.length) onFiles(files)
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (file) onFile(file)
+    const files = Array.from(e.target.files ?? [])
+    if (files.length) onFiles(files)
     e.target.value = ''
   }
 
@@ -33,11 +34,12 @@ export function DropZone({ onFile }: DropZoneProps) {
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
       sx={{
-        p: 6,
+        p: compact ? 2 : 6,
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: compact ? 'row' : 'column',
         alignItems: 'center',
-        gap: 1.5,
+        justifyContent: 'center',
+        gap: compact ? 1 : 1.5,
         cursor: 'pointer',
         borderStyle: 'dashed',
         borderWidth: 2,
@@ -54,19 +56,24 @@ export function DropZone({ onFile }: DropZoneProps) {
       <input
         ref={inputRef}
         type="file"
+        multiple
         accept={ACCEPTED.join(',')}
         onChange={handleChange}
         hidden
       />
       <Box sx={{ color: dragging ? 'primary.main' : 'text.disabled' }}>
-        <ImageOutlinedIcon sx={{ fontSize: 56 }} />
+        <ImageOutlinedIcon sx={{ fontSize: compact ? 28 : 56 }} />
       </Box>
-      <Typography variant="body1" sx={{ fontWeight: 500, color: 'text.primary' }}>
-        拖曳圖片至此，或點擊選取
-      </Typography>
-      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-        支援 JPEG、PNG、WebP、GIF、BMP
-      </Typography>
+      <Box sx={{ textAlign: compact ? 'left' : 'center' }}>
+        <Typography variant={compact ? 'body2' : 'body1'} sx={{ fontWeight: 500, color: 'text.primary' }}>
+          {compact ? '加入更多圖片（可多選或拖曳）' : '拖曳圖片至此，或點擊選取（可多選）'}
+        </Typography>
+        {!compact && (
+          <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+            支援 JPEG、PNG、WebP、GIF、BMP
+          </Typography>
+        )}
+      </Box>
     </Paper>
   )
 }
